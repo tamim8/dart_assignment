@@ -1,5 +1,5 @@
 class AppString {
-  static const appName ='HUMMING\nBIRD.';
+  static const appName ='Water Tracker';
   static const drawerTitle ='SKILL UP NOW';
   static const drawerSubTitle ='TAP HERE';
   static const String homeTitle = 'FLUTTER WEB.\nTHE BASICS';
