@@ -1,5 +1,5 @@
-name: water_tracker
-description: "Module-12-Water-Tracker-Assignment"
+name: calculator
+description: "Module-12-Calculator App"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -9,7 +9,6 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  sizer: ^3.0.3
 
 dev_dependencies:
   flutter_test:
