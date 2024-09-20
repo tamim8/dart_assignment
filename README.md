@@ -1,6 +1,6 @@
 # assignment
 
-A new Flutter project.
+A new Flutter CRUD project with rest Api.
 
 ## Getting Started
 
