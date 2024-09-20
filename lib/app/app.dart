@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import 'features/home/pages/home_page.dart';
+import 'features/product/pages/product_page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -11,13 +11,13 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveSizer(builder: (context, orientation, deviceType) {
       return MaterialApp(
-        title: 'Water Tracker',
+        title: 'Crud app',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
-        home: const HomePage(),
+        home: const ProductPage(),
       );
     });
   }

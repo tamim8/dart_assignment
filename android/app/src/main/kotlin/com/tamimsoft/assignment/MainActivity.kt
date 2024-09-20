@@ -1,4 +1,4 @@
-package com.example.module_10_assignment
+package com.tamimsoft.assignment
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,5 +1,5 @@
-name: water_tracker
-description: "Module-12-Water-Tracker-Assignment"
+name: crud_app
+description: "Module-14-Assignment"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -10,6 +10,8 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   sizer: ^3.0.3
+  http: ^1.2.2
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_test:
