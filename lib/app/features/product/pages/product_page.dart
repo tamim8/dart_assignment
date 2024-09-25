@@ -85,7 +85,7 @@ class _CartScreenState extends State<ProductPage> {
   }
 
   Future<void> _deleteProduct({productId}) async {
-    bool isSuccess = await apiService.deleteProduct(productId: productId);
+    bool isSuccess = await apiService.deleteProduct(id: productId);
     if (isSuccess) {
       _loadProductList();
     }
@@ -131,7 +131,6 @@ class _CartScreenState extends State<ProductPage> {
   @override
   void initState() {
     super.initState();
-    // TODO: implement initState
     _loadProductList();
     unitPriceController.addListener(_updateTotalPrice);
     qtyController.addListener(_updateTotalPrice);
@@ -218,8 +217,8 @@ class _CartScreenState extends State<ProductPage> {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           title: Text(title),
-          actionsPadding: const EdgeInsets.only(top: 0),
-          contentPadding: const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 0),
+          // actionsPadding: const EdgeInsets.only(top: 0),
+          // contentPadding: const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 0),
           actions: [
             TextButton(
               style: TextButton.styleFrom(foregroundColor: Colors.red),

@@ -9,8 +9,8 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  sizer: ^3.0.3
   http: ^1.2.2
+  connectivity_plus: ^6.0.5
   fluttertoast: ^8.2.8
 
 dev_dependencies:

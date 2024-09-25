@@ -1,16 +1,30 @@
-import 'package:crud_app/app/features/product/model/product_model.dart';
-
-class ApiResponse {
+class ApiResponse<T> {
   final String status;
-  final List<Product> data;
+  final String? message;
+  final T? data;
 
   ApiResponse({
     required this.status,
-    required this.data,
+    this.message,
+    this.data,
   });
 
-  factory ApiResponse.fromJson(Map<String, dynamic> json) => ApiResponse(
-        status: json["status"],
-        data: List<Product>.from(json["data"].map((x) => Product.fromJson(x))),
-      );
+  // Factory constructor to create an ApiResponse object from a JSON map
+  factory ApiResponse.fromJson(
+      Map<String, dynamic> json, T Function(dynamic) fromJsonT) {
+    return ApiResponse<T>(
+      status: json['status'] as String,
+      message: json['message'] as String?,
+      data: json['data'] != null ? fromJsonT(json['data']) : null,
+    );
+  }
+
+  // Convert an ApiResponse object to a JSON map
+  Map<String, dynamic> toJson(Map<String, dynamic> Function(T) toJsonT) {
+    return {
+      'status': status,
+      'message': message,
+      'data': data != null ? toJsonT(data as T) : null,
+    };
+  }
 }

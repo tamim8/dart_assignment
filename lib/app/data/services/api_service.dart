@@ -1,43 +1,73 @@
-import 'package:crud_app/app/data/model/delete_response.dart';
-
 import '../../features/product/model/product_model.dart';
 import '../../utils/constants/api_constants.dart';
 import '../../utils/http/http_client.dart';
-import '../model/api_response.dart';
 
 class ApiService {
   final HttpClient _http = HttpClient();
 
   /// -- Fetch Product List From Server
   Future<List<Product>> fetchProductList() async {
-    final apiResponse = await _http.makeGetRequest<ApiResponse>(
+    final productResponse = await _http.makeGetRequest<List<Product>>(
       endpoint: ApiConstants.products,
-      fromJson: (jsonResponse) => ApiResponse.fromJson(jsonResponse),
+      fromJsonT: (data) =>
+          (data as List).map((e) => Product.fromJson(e)).toList(),
     );
-    return apiResponse.data;
+
+    if (productResponse.status == 'success' && productResponse.data != null) {
+      return productResponse.data!;
+    }
+    print('Error: ${productResponse.message}');
+    return [];
   }
 
   /// -- Create a New Product
   Future<bool> createProduct({required jsonBody}) async {
-    return await _http.makePostRequest(endpoint: ApiConstants.createProduct, body: jsonBody);
+    final productResponse = await _http.makePostRequest<Product>(
+      endpoint: ApiConstants.createProduct,
+      body: jsonBody,
+      fromJsonT: (data) => Product.fromJson(data),
+    );
+
+    if (productResponse.status == 'success' && productResponse.data != null) {
+      return true;
+    }
+    print('Error: ${productResponse.message}');
+    return false;
   }
 
   /// -- Update Existing Product
   Future<bool> updateProduct({required jsonBody, required id}) async {
-    return await _http.makePostRequest(endpoint: '${ApiConstants.updateProduct}/$id', body: jsonBody);
+    final productResponse = await _http.makePostRequest<Product>(
+      endpoint: '${ApiConstants.updateProduct}/$id',
+      body: jsonBody,
+      fromJsonT: (data) => Product.fromJson(data),
+    );
+
+    if (productResponse.status == 'success' && productResponse.data != null) {
+      return true;
+    }
+
+    print('Error: ${productResponse.message}');
+
+    return false;
   }
 
   /// -- Delete Product
-  Future<bool> deleteProduct({required String productId}) async {
-    final DeleteResponse deleteResponse = await _http.makeGetRequest<DeleteResponse>(
-      endpoint: '${ApiConstants.deleteProduct}/$productId',
-      fromJson: (jsonResponse) => DeleteResponse.fromJson(jsonResponse),
+  Future<bool> deleteProduct({required String id}) async {
+    final deleteResponse = await _http.makeGetRequest<Product>(
+      endpoint: '${ApiConstants.deleteProduct}/$id',
+      fromJsonT: (data) => Product.fromJson(data),
     );
-    return deleteResponse.status == 'success';
+
+    if (deleteResponse.status == 'success' && deleteResponse.data != null) {
+      return true;
+    }
+    print('Error: ${deleteResponse.message}');
+    return false;
   }
 
-  ///-- Check Product image is exist in this url or not
-  Future<bool> isValidProductImageUrl({required String url}) async {
-    return await _http.checkImageUrl(url);
-  }
+  // ///-- Check Product image is exist in this url or not
+  // Future<bool> isValidProductImageUrl({required String url}) async {
+  //   return await _http.checkImageUrl(url);
+  // }
 }
