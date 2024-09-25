@@ -1,3 +1,6 @@
 class ImagePath{
-  static const imageNotFound = 'assets/images/image_not_found.png';
+  static const _rootPath = "assets/images";
+  static const imageNotFound = '$_rootPath/image_not_found.png';
+  static const backgroundSvg = '$_rootPath/background.svg';
+  static const logoSvg = '$_rootPath/logo.svg';
 }

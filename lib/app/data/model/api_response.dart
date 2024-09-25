@@ -1,8 +1,6 @@
-import 'package:crud_app/app/features/product/model/product_model.dart';
-
-class ApiResponse {
+class ApiResponse<T> {
   final String status;
-  final List<Product> data;
+  final T data;
 
   ApiResponse({
     required this.status,
@@ -11,6 +9,6 @@ class ApiResponse {
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) => ApiResponse(
         status: json["status"],
-        data: List<Product>.from(json["data"].map((x) => Product.fromJson(x))),
+        data: json["data"],
       );
 }

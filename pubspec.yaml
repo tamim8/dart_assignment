@@ -1,5 +1,5 @@
-name: crud_app
-description: "Module-14-Assignment"
+name: task_manager
+description: "Task manager project"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -8,10 +8,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
-  sizer: ^3.0.3
   http: ^1.2.2
   fluttertoast: ^8.2.8
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:

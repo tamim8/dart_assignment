@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
+import 'package:task_manager/app/theme/app_theme.dart';
 
-import 'features/product/pages/product_page.dart';
+import 'features/splash/screens/splash_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -9,16 +9,12 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ResponsiveSizer(builder: (context, orientation, deviceType) {
-      return MaterialApp(
-        title: 'Crud app',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-        ),
-        home: const ProductPage(),
-      );
-    });
+    return MaterialApp(
+      title: 'Task Manager',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.theme,
+      home: const SplashScreen(),
+    );
   }
+
 }
