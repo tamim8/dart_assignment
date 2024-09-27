@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../utils/constants/app_colors.dart';
+
 class AppTheme{
 
   static ThemeData get theme {
     return ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         useMaterial3: true,
         inputDecorationTheme: inputDecorationTheme,
         elevatedButtonTheme: elevatedButtonTheme);
@@ -28,7 +30,7 @@ class AppTheme{
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.infinity, 45),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
     );

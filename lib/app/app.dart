@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/app/features/authentication/screens/sign_in_screen.dart';
 import 'package:task_manager/app/theme/app_theme.dart';
 
 import 'features/splash/screens/splash_screen.dart';
@@ -13,7 +14,7 @@ class App extends StatelessWidget {
       title: 'Task Manager',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
-      home: const SplashScreen(),
+      home:  SignInScreen(),
     );
   }
 
