@@ -1,21 +1,41 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/app/data/services/api_service.dart';
+import 'package:task_manager/app/features/home/screens/home_screen.dart';
 
-import '../../../common/widget/app_background.dart';
-import '../../../utils/constants/app_colors.dart';
-import '../../../utils/constants/app_sizes.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../utils/helper/app_export.dart';
+import '../models/user_model.dart';
 import 'forget_password_screen.dart';
 import 'sign_up_screen.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+  const SignInScreen({super.key, this.email, this.password});
+
+  final String? email;
+  final String? password;
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
+
+  final ApiService _apiService = ApiService();
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    if (widget.email != null && widget.password != null) {
+      _emailTEController.text = widget.email!;
+      _passwordTEController.text = widget.password!;
+    }
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -25,7 +45,7 @@ class _SignInScreenState extends State<SignInScreen> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 65.0, vertical: 140),
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.fromPadding, vertical: 140),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,22 +71,37 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Widget _buildSignInForm() {
-    return Column(
-      children: [
-        TextFormField(
-          decoration: const InputDecoration(label: Text(AppString.emailText)),
-        ),
-        SizedBox(height: AppSizes.lVerticalSpace),
-        TextFormField(
-          obscureText: true,
-          decoration: const InputDecoration(label: Text(AppString.passwordText)),
-        ),
-        SizedBox(height: AppSizes.lVerticalSpace),
-        ElevatedButton(
-          onPressed: _signInButton,
-          child: const Icon(Icons.chevron_right_outlined, size: 30),
-        ),
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _emailTEController,
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) {
+              if (value!.isEmpty) return AppString.emailAddressRequiredText;
+              if (!value.isValidEmail) return AppString.invalidEmailAddressText;
+              return null;
+            },
+            decoration: const InputDecoration(label: Text(AppString.emailText)),
+          ),
+          SizedBox(height: AppSizes.lVerticalSpace),
+          TextFormField(
+            controller: _passwordTEController,
+            obscureText: true,
+            validator: (value) {
+              if (value!.isEmpty) return AppString.passwordRequiredText;
+              return null;
+            },
+            decoration: const InputDecoration(label: Text(AppString.passwordText)),
+          ),
+          SizedBox(height: AppSizes.lVerticalSpace),
+          ElevatedButton(
+            onPressed: _signInButton,
+            child: isLoading ? buttonLoading() : const Icon(Icons.chevron_right_outlined, size: 30),
+          ),
+        ],
+      ),
     );
   }
 
@@ -99,27 +134,40 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  void _signInButton() {
-    //  TODO: implement sign in button method
+  void _signInButton() async {
+    if (_formKey.currentState!.validate()) {
+      isLoading = true;
+      setState(() {});
+
+      UserModel user = UserModel.loginUser(email: _emailTEController.text.trim(), password: _passwordTEController.text);
+      final isLogin = await _apiService.login(user: user);
+      isLoading = false;
+      if (isLogin) {
+        successToast(msg: 'Success!', context: context);
+        setState(() {});
+        AppNavigator.pushAndRemoveUntil(context: context, screen: const HomeScreen());
+
+      } else {
+        errorToast(msg: 'Invalid user info', context: context);
+        setState(() {});
+      }
+    }
   }
 
   void _forgetPasswordButton() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ForgetPasswordScreen(),
-      ),
-    );
+    AppNavigator.push(context: context, screen: const ForgetPasswordScreen());
+
   }
 
   void _onTapSignUpText() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SignUpScreen(),
-      ),
-    );
+    AppNavigator.push(context: context, screen: const SignUpScreen());
+
+  }
+
+  @override
+  void dispose() {
+    _emailTEController.dispose();
+    _passwordTEController.dispose();
+    super.dispose();
   }
 }
-
-

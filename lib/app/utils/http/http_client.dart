@@ -1,115 +1,146 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:http/http.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../../data/model/api_response.dart';
 import '../constants/api_constants.dart';
 
-class HttpClient {
-  ///-- this is Generic Get Method --------------------------------
-  Future<T> makeGetRequest<T>({
-    required String endpoint,
-    required T Function(dynamic) fromJson,
-    Map<String, dynamic>? queryParams,
-  }) async {
+abstract class HttpClient {
+  late final GetStorage _storage;
+
+  HttpClient() {
+    _storage = GetStorage();
+  }
+
+  GetStorage get localStorage => _storage;
+
+  // Prepare headers for requests
+  Map<String, String> _getHeaders() {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+    if (_storage.read('token') != null) {
+      headers['token'] = _storage.read('token');
+    }
+    return headers;
+  }
+
+  // Build URI with optional query parameters
+  Uri _buildUri(String endpoint, {Map<String, dynamic>? queryParams}) {
     Uri uri = Uri.parse(ApiConstants.baseUrl + endpoint);
     if (queryParams != null) {
       uri = uri.replace(queryParameters: queryParams);
     }
-    // Prepare headers, including Content-Type for JSON
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json', // Set the Content-Type to JSON
-    };
-
-    // Perform the GET request
-    final Response response = await http.get(uri, headers: headers);
-
-    // Parse the response
-    return fromJson(_handleResponse(response));
+    return uri;
   }
 
-  ///-- this is Generic Post Method --------------------------------
-  Future<bool> makePostRequest({
-    required String endpoint,
-    required Map<String, dynamic> body, // Added JSON body parameter
-    Map<String, dynamic>? queryParams,
-    String? token,
-  }) async {
-    // Build the URI with query parameters if any
-    Uri uri = Uri.parse(ApiConstants.baseUrl + endpoint);
-    if (queryParams != null) {
-      uri = uri.replace(queryParameters: queryParams);
-    }
-
-    // Prepare headers, including Content-Type for JSON
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json', // Set the Content-Type to JSON
-    };
-
-    // Perform the POST request with the JSON-encoded body
-    final Response response = await http.post(
-      uri,
-      headers: headers,
-      body: jsonEncode(body), // Encode the body to JSON
-    );
-
-    // Error handling for unsuccessful requests
-    if (response.statusCode >= 400) {
-      throw Exception('Failed to POST: ${response.statusCode}');
-    }
-
-    // Parse the response
-    return _handleResponse(response) != null;
-  }
-
-  ///-- this is Generic Delete Method --------------------------------
-  Future<bool> makeDeleteRequest({
-    required String endpoint, // Added JSON body parameter
-    Map<String, dynamic>? queryParams,
-  }) async {
-    // Build the URI with query parameters if any
-    Uri uri = Uri.parse(ApiConstants.baseUrl + endpoint);
-    if (queryParams != null) {
-      uri = uri.replace(queryParameters: queryParams);
-    }
-
-    // Prepare headers, including Content-Type for JSON
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json', // Set the Content-Type to JSON
-    };
-
-    // Perform the POST request with the JSON-encoded body
-    final Response response = await http.delete(uri, headers: headers);
-
-    // Error handling for unsuccessful requests
-    if (response.statusCode >= 400) {
-      throw Exception('Failed to Delete: ${response.statusCode}');
-    }
-
-    // Parse the response
-    return _handleResponse(response) != null;
-  }
-
-  ///-- Handle response
-  dynamic _handleResponse(Response response) {
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to lode data: ${response.statusCode}');
-    }
-  }
-
-  ///-- Check image is exist in this url or not
-  Future<bool> checkImageUrl(String url) async {
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        return false;
+  ///-- Private method to handle all HTTP responses
+  ApiResponse<T> _handleResponse<T>(
+    http.Response response,
+    T Function(dynamic)? fromJsonT,
+  ) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final ApiResponse<T> result =
+          ApiResponse<T>.fromJson(jsonResponse, fromJsonT);
+      if (result.status == 'success') {
+        return result;
       }
+      return ApiResponse<T>(
+        status: result.status,
+        message: "Fail: ${result.data}",
+      );
+    } else {
+      return ApiResponse<T>(
+        status: "error",
+        message: "Error: ${response.statusCode} - ${response.body}",
+      );
+    }
+  }
+
+  ///-- Generic GET Method --------------------------------
+  Future<ApiResponse<T>> makeGetRequest<T>({
+    required String endpoint,
+    T Function(dynamic)? fromJsonT,
+    Map<String, dynamic>? queryParams,
+  }) async {
+    try {
+      final uri = _buildUri(endpoint, queryParams: queryParams);
+      final response = await http.get(
+        uri,
+        headers: _getHeaders(),
+      );
+      return _handleResponse(response, fromJsonT);
+    } on SocketException {
+      return ApiResponse<T>(status: "error", message: "No internet connection");
     } catch (e) {
-      return false;
+      return ApiResponse<T>(status: "error", message: "Exception: $e");
+    }
+  }
+
+  ///-- Generic POST Method --------------------------------
+  Future<ApiResponse<T>> makePostRequest<T>({
+    required String endpoint,
+    required Map<String, dynamic> body,
+    T Function(dynamic)? fromJsonT,
+    Map<String, dynamic>? queryParams,
+  }) async {
+    try {
+      final uri = _buildUri(endpoint, queryParams: queryParams);
+      final response = await http.post(
+        uri,
+        headers: _getHeaders(),
+        body: jsonEncode(body),
+      );
+      return _handleResponse(response, fromJsonT);
+    } on SocketException {
+      return ApiResponse<T>(status: "error", message: "No internet connection");
+    } catch (e) {
+      return ApiResponse<T>(status: "error", message: "Exception: $e");
+    }
+  }
+
+  ///-- Generic PUT method with internet connectivity check
+  Future<ApiResponse<T>> makePutRequest<T>(
+    String endpoint,
+    Map<String, dynamic> body,
+    T Function(dynamic) fromJsonT,
+    Map<String, dynamic>? queryParams,
+  ) async {
+    try {
+      final uri = _buildUri(endpoint, queryParams: queryParams);
+      final response = await http.post(
+        uri,
+        headers: _getHeaders(),
+        body: jsonEncode(body),
+      );
+      return _handleResponse(response, fromJsonT);
+    } on SocketException {
+      return ApiResponse<T>(status: "error", message: "No internet connection");
+    } catch (e) {
+      return ApiResponse<T>(status: "error", message: "Exception: $e");
+    }
+  }
+
+  ///-- Generic DELETE method with internet connectivity check
+  Future<ApiResponse<T>> makeDeleteRequest<T>(
+    String endpoint,
+    T Function(dynamic) fromJsonT,
+    Map<String, dynamic>? queryParams,
+  ) async {
+    try {
+      final uri = _buildUri(endpoint, queryParams: queryParams);
+      final response = await http.post(
+        uri,
+        headers: _getHeaders(),
+      );
+      return _handleResponse(response, fromJsonT);
+    } on SocketException {
+      return ApiResponse<T>(status: "error", message: "No internet connection");
+    } catch (e) {
+      return ApiResponse<T>(status: "error", message: "Exception: $e");
     }
   }
 }

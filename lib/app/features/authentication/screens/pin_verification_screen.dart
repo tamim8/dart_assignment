@@ -1,32 +1,40 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
 import 'package:task_manager/app/features/authentication/screens/reset_password_screen.dart';
 
-import '../../../common/widget/app_background.dart';
-import '../../../utils/constants/app_colors.dart';
-import '../../../utils/constants/app_sizes.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../data/services/api_service.dart';
+import '../../../utils/helper/app_export.dart';
 import 'sign_in_screen.dart';
 
 class PinVerificationScreen extends StatefulWidget {
-  const PinVerificationScreen({super.key});
+  const PinVerificationScreen({super.key, required this.email});
+
+  final String email;
 
   @override
   State<PinVerificationScreen> createState() => _PinVerificationScreenState();
 }
 
 class _PinVerificationScreenState extends State<PinVerificationScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _pinController = TextEditingController();
+  final ApiService _apiService = ApiService();
+  bool buttonActive = false;
+  bool isLoading = false;
+  bool isValid = false;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final size = MediaQuery.sizeOf(context);
+    MediaQuery.sizeOf(context);
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 65.0, vertical: 140),
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.fromPadding, vertical: 140),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,20 +64,49 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
   }
 
   Widget _buildForgetPasswordForm() {
-    return Column(
-      children: [
-        TextFormField(
-          keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(
-            label: Text(AppString.emailText),
+    final defaultPinTheme = PinTheme(
+      width: 56,
+      height: 56,
+      textStyle: const TextStyle(
+        fontSize: 22,
+        color: Color.fromRGBO(30, 60, 87, 1),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          Pinput(
+            length: 6,
+            controller: _pinController,
+            validator: (value) {
+              return isValid ? null : 'Pin is incorrect';
+            },
+            onCompleted: (pin) {
+              buttonActive = true;
+              _pinVerifyButton();
+              setState(() {});
+            },
+            defaultPinTheme: defaultPinTheme,
+            focusedPinTheme: defaultPinTheme.copyBorderWith(
+              border: Border.all(color: Colors.green),
+            ),
+            errorPinTheme: defaultPinTheme.copyBorderWith(
+              border: Border.all(color: Colors.redAccent),
+            ),
           ),
-        ),
-        SizedBox(height: AppSizes.lVerticalSpace),
-        ElevatedButton(
-          onPressed: _pinVerifyButton,
-          child: const Text(AppString.verifyButtonText),
-        ),
-      ],
+          SizedBox(height: AppSizes.lVerticalSpace),
+          ElevatedButton(
+            onPressed: buttonActive ? _pinVerifyButton : null,
+            child: isLoading ? buttonLoading() : const Text(AppString.verifyButtonText),
+          ),
+        ],
+      ),
     );
   }
 
@@ -91,22 +128,38 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
     );
   }
 
-  void _pinVerifyButton() {
-    //  TODO: implement
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ResetPasswordScreen(),
-      ),
-    );
+  _pinVerifyButton() async {
+    isLoading = true;
+    setState(() {});
+    try {
+      final String userInputPin = _pinController.text.toString();
+      isValid = await _apiService.verifyPin(email: widget.email, pin: userInputPin);
+
+      if (_formKey.currentState!.validate()) {
+        AppNavigator.pushReplacement(
+          context: context,
+          screen: ResetPasswordScreen(
+            email: widget.email,
+            otp: userInputPin,
+          ),
+        );
+      }
+    } catch (e) {
+      errorToast(msg: e.toString(), context: context);
+      setState(() {});
+    } finally {
+      isLoading = false;
+      setState(() {});
+    }
   }
 
   void _onTapSignInText() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SignInScreen(),
-      ),
-    );
+    AppNavigator.pushAndRemoveUntil(context: context, screen: const SignInScreen());
+  }
+
+  @override
+  void dispose() {
+    _pinController.dispose();
+    super.dispose();
   }
 }

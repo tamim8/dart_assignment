@@ -3,7 +3,7 @@ class AppSizes {
 
   // -- App Default Sizes
   static double defaultSize = 30.0;
-  static double fromHeight = 30.0;
+  static double fromPadding = 30.0;
 
   /// -- Height --------------------------------
   static double sHeight = 5.0;

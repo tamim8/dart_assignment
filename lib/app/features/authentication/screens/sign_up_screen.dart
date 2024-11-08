@@ -1,10 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/app/features/authentication/models/user_model.dart';
 
-import '../../../common/widget/app_background.dart';
-import '../../../utils/constants/app_colors.dart';
-import '../../../utils/constants/app_sizes.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../data/services/api_service.dart';
+import '../../../utils/helper/app_export.dart';
 import 'sign_in_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -15,17 +14,27 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _firstNameTEController = TextEditingController();
+  final TextEditingController _lastNameTEController = TextEditingController();
+  final TextEditingController _mobileNoTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
+
+  final ApiService _apiService = ApiService();
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final size = MediaQuery.sizeOf(context);
+    MediaQuery.sizeOf(context);
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 65.0, vertical: 140),
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.fromPadding, vertical: 140),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,39 +60,70 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildSignUpForm() {
-    return Column(
-      children: [
-        TextFormField(
-          keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(
-            label: Text(AppString.emailText),
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _emailTEController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              label: Text(AppString.emailText),
+            ),
+            validator: (value) {
+              if (value!.isEmpty) return AppString.emailAddressRequiredText;
+              if (!value.isValidEmail) return AppString.invalidEmailAddressText;
+              return null;
+            },
           ),
-        ),
-        SizedBox(height: AppSizes.lVerticalSpace),
-        TextFormField(
-          decoration: const InputDecoration(
-            label: Text(AppString.firstNameText),
+          SizedBox(height: AppSizes.lVerticalSpace),
+          TextFormField(
+            controller: _firstNameTEController,
+            decoration: const InputDecoration(
+              label: Text(AppString.firstNameText),
+            ),
+            validator: (value) {
+              if (value!.isEmpty) return 'First Name is required';
+              return null;
+            },
           ),
-        ),
-        SizedBox(height: AppSizes.lVerticalSpace),
-        TextFormField(
-          decoration: const InputDecoration(
-            label: Text(AppString.lastNameText),
+          SizedBox(height: AppSizes.lVerticalSpace),
+          TextFormField(
+            controller: _lastNameTEController,
+            decoration: const InputDecoration(
+              label: Text(AppString.lastNameText),
+            ),
+            validator: (value) {
+              if (value!.isEmpty) return 'Last Name is required';
+              return null;
+            },
           ),
-        ),
-        SizedBox(height: AppSizes.lVerticalSpace),
-        TextFormField(
-          keyboardType: TextInputType.phone,
-          decoration: const InputDecoration(label: Text(AppString.mobileNoText)),
-        ),
-        SizedBox(height: AppSizes.lVerticalSpace),
-        TextFormField(decoration: const InputDecoration(label: Text(AppString.passwordText))),
-        SizedBox(height: AppSizes.lVerticalSpace),
-        ElevatedButton(
-          onPressed: _signUpButton,
-          child: const Icon(Icons.chevron_right_outlined, size: 30),
-        ),
-      ],
+          SizedBox(height: AppSizes.lVerticalSpace),
+          TextFormField(
+            controller: _mobileNoTEController,
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(label: Text(AppString.mobileNoText)),
+            validator: (value) {
+              if (value!.isEmpty) return 'Mobile No is required';
+              return null;
+            },
+          ),
+          SizedBox(height: AppSizes.lVerticalSpace),
+          TextFormField(
+            controller: _passwordTEController,
+            decoration: const InputDecoration(label: Text(AppString.passwordText)),
+            validator: (value) {
+              if (value!.isEmpty) return 'Password is required';
+              return null;
+            },
+          ),
+          SizedBox(height: AppSizes.lVerticalSpace),
+          ElevatedButton(
+            onPressed: isLoading ? null : _signUpButton,
+            child: isLoading ? buttonLoading() : const Icon(Icons.chevron_right_outlined, size: 30),
+          ),
+        ],
+      ),
     );
   }
 
@@ -105,16 +145,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  void _signUpButton() {
-    //  TODO: implement sign in button method
+  _signUpButton() async {
+    if (_formKey.currentState!.validate()) {
+      isLoading = true;
+      setState(() {});
+      UserModel user = UserModel(
+          email: _emailTEController.text.trim(),
+          firstName: _firstNameTEController.text.trim(),
+          lastName: _lastNameTEController.text.trim(),
+          mobile: _mobileNoTEController.text.trim(),
+          password: _passwordTEController.text);
+      try {
+        await _apiService.registration(user: user);
+        successToast(msg: 'Success!', context: context);
+        setState(() {});
+        AppNavigator.pushAndRemoveUntil(
+            context: context,
+            screen: SignInScreen(
+              email: _emailTEController.text.trim(),
+              password: _passwordTEController.text,
+            ));
+      } catch (e) {
+        errorToast(msg: e.toString(), context: context);
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 
   void _onTapSignInText() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SignInScreen(),
-      ),
-    );
+    AppNavigator.pushAndRemoveUntil(context: context, screen: const SignInScreen());
+  }
+
+  @override
+  void dispose() {
+    _emailTEController.dispose();
+    _firstNameTEController.dispose();
+    _lastNameTEController.dispose();
+    _mobileNoTEController.dispose();
+    _passwordTEController.dispose();
+    super.dispose();
   }
 }

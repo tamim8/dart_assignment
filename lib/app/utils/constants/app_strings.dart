@@ -1,8 +1,13 @@
 class AppString {
+  AppString._();
+
   // Login Screen text
   static const signInScreenTitleText = "Get Started With";
   static const emailText = "Email";
+  static const emailAddressRequiredText = 'Email address cannot be empty';
+  static const invalidEmailAddressText = 'Invalid email address';
   static const passwordText = "Password";
+  static const passwordRequiredText = 'Password cannot be empty';
   static const signInText = "Sign in";
   static const forgotPasswordText = "Forget Password ?";
   static const dontHaveAccountText = "Don’t have account? ";
@@ -30,4 +35,11 @@ class AppString {
       "Minimum length password 8 character with Latter and number combination";
   static const confirmPasswordText = "Confirm Password";
   static const confirmationButtonText = "Confirm";
+
+
+
+  // Create New task
+
+  static const titleRequiredText = "Title cannot be empty";
+  static const descriptionRequiredText = "Description cannot be empty";
 }

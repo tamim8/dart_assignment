@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:task_manager/app/utils/constants/image_path.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:task_manager/app/features/home/screens/home_screen.dart';
 
-import '../../../common/widget/app_background.dart';
+import '../../../utils/helper/app_export.dart';
 import '../../authentication/screens/sign_in_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,18 +15,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final GetStorage _storage = GetStorage();
+
   @override
   void initState() {
     navigateToAnotherScreen();
     super.initState();
   }
 
-  Future<void> navigateToAnotherScreen() async {
+  navigateToAnotherScreen() async {
+    String token = _storage.read('token') ?? '';
     await Future.delayed(const Duration(seconds: 3));
-
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const SignInScreen(), maintainState: true),
-    );
+    if (token.isEmpty) {
+      AppNavigator.pushAndRemoveUntil(context: context, screen: const SignInScreen());
+    } else {
+      AppNavigator.pushAndRemoveUntil(context: context, screen: const HomeScreen());
+    }
   }
 
   @override
