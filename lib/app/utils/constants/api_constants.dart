@@ -1,11 +1,13 @@
 abstract class ApiConstants {
+  static const Duration receiveTimeout = Duration(seconds: 20);
+  static const Duration connectionTimeout = Duration(seconds: 20);
   static const baseUrl = 'http://35.73.30.144:2005/api/v1';
 
   // Authorization
   static const login = '/Login';
   static const registration = '/Registration';
-  static const recoverVerifyEmail = '/RecoverVerifyEmail';
-  static const recoverVerifyOtp = '/RecoverVerifyOtp';
+  static const verifyRecoveryEmail = '/RecoverVerifyEmail';
+  static const verifyOtp = '/RecoverVerifyOtp';
   static const resetPassword = '/RecoverResetPassword';
 
   //Profile

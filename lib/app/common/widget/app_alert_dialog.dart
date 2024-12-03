@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class GenericAlertDialog {
-  static void show(
-    BuildContext context, {
+  static void show({
     required String title,
     required String message,
     String confirmText = 'OK',
@@ -11,36 +11,30 @@ class GenericAlertDialog {
     VoidCallback? onCancel,
     bool isCancelable = true,
   }) {
-    showDialog(
-      context: context,
-      barrierDismissible: isCancelable,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (onCancel != null) {
-                  onCancel();
-                }
-              },
-              child: Text(cancelText),
-            ),
-            TextButton(
-              style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (onConfirm != null) {
-                  onConfirm();
-                }
-              },
-              child: Text(confirmText),
-            ),
-          ],
-        );
-      },
-    );
+    Get.dialog(AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Get.back();
+            if (onCancel != null) {
+              onCancel();
+            }
+          },
+          child: Text(cancelText),
+        ),
+        TextButton(
+          style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+          onPressed: () {
+            Get.back();
+            if (onConfirm != null) {
+              onConfirm();
+            }
+          },
+          child: Text(confirmText),
+        ),
+      ],
+    ));
   }
 }

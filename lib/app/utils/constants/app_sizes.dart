@@ -20,15 +20,5 @@ class AppSizes {
   static double mRadius = 8.0;
   static double lRadius = 15.0;
 
-  ///-- Vertical Spacing --------------------------------
-  static double xsVerticalSpace = 2.5;
-  static double sVerticalSpace = 5.0;
-  static double mVerticalSpace = 10.0;
-  static double lVerticalSpace = 15.0;
-
-  /// --  Horizontal space -----
-  static double xsHorizontalSpace = 5;
-  static double sHorizontalSpace = 10;
-
   static double buttonHeight = 16.0;
 }

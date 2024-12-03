@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/app/utils/helper/app_export.dart';
+
+import '../../common/widget/app_alert_dialog.dart';
+import '../constants/app_colors.dart';
 
 extension EmailValidator on String {
   bool get isValidEmail {
@@ -26,5 +28,21 @@ Widget buttonLoading() {
       color: Colors.white,
       strokeWidth: 2,
     ),
+  );
+}
+
+void deleteDialog({
+  required VoidCallback onConfirm,
+  String? message,
+}) {
+  GenericAlertDialog.show(
+    title: 'Delete Confirmation',
+    message: message ?? 'Are you sure you want to Delete this task?',
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+    onConfirm: onConfirm,
+    onCancel: () {
+      // Handle cancel action
+    },
   );
 }

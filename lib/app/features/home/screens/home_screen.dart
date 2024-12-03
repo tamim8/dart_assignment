@@ -1,56 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../../../common/widget/app_background.dart';
 import '../../../common/widget/my_app_bar.dart';
-import '../../../utils/helper/app_export.dart';
-import 'canceled_task_view.dart';
-import 'completed_task_view.dart';
-import 'new_task_view.dart';
-import 'progress_task_view.dart';
+import '../controllers/home_controller.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+import 'widgets/widgets.dart';
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+class HomeScreen extends StatelessWidget {
+  HomeScreen({super.key});
 
   final List<Widget> _screens = [
-    const NewTaskView(),
+    NewTaskView(),
+    const ProgressTaskView(),
     const CompletedTaskView(),
     const CanceledTaskView(),
-    const ProgressTaskView(),
   ];
+
+  final HomeController _controller = Get.find<HomeController>();
 
   @override
   Widget build(BuildContext context) {
-    return AppBackground(
-      child: Scaffold(
-        appBar:  MyAppBar(context: context,),
-        body: _screens[_selectedIndex],
-        bottomNavigationBar: _buildBottomNavigationBar(),
+    return Scaffold(
+      appBar: const MyAppBar(),
+      body: AppBackground(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Obx(() => _screens[_controller.selectedIndex.value]),
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
   Widget _buildBottomNavigationBar() {
-    return NavigationBar(
-      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-      selectedIndex: _selectedIndex,
-      onDestinationSelected: _onItemTapped,
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.task_outlined), label: 'New Task'),
-        NavigationDestination(icon: Icon(Icons.task_outlined), label: 'Completed'),
-        NavigationDestination(icon: Icon(Icons.task_outlined), label: 'Canceled'),
-        NavigationDestination(icon: Icon(Icons.task_outlined), label: 'Progress'),
-      ],
-    );
-  }
-
-  void _onItemTapped(int index) {
-    _selectedIndex = index;
-    setState(() {});
+    return Obx(() {
+      return NavigationBar(
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        selectedIndex: _controller.selectedIndex.value,
+        onDestinationSelected: _controller.setIndex,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.task_outlined),
+            label: 'New Task',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.hourglass_empty), // Different icon for clarity
+            label: 'Progress',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.check_circle_outline),
+            // Different icon for clarity
+            label: 'Completed',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.cancel_outlined), // Different icon for clarity
+            label: 'Canceled',
+          ),
+        ],
+      );
+    });
   }
 }

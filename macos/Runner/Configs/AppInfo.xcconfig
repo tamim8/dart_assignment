@@ -8,7 +8,7 @@
 PRODUCT_NAME = assignment
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.module10Assignment
+PRODUCT_BUNDLE_IDENTIFIER = com.tamimsoft.taskmanager
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2024 com.example. All rights reserved.

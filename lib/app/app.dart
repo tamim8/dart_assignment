@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/app/features/home/screens/home_screen.dart';
+import 'package:get/get.dart';
+import 'package:task_manager/app/routes/routes.dart';
 import 'package:task_manager/app/theme/app_theme.dart';
 
-import 'features/authentication/screens/pin_verification_screen.dart';
-import 'features/splash/screens/splash_screen.dart';
+import 'routes/routes_name.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -11,11 +11,12 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Task Manager',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
-      home: const SplashScreen(),
+      getPages: Routes.routes,
+      initialRoute: RoutesName.splash,
       // home: const PinVerificationScreen(email: 'tammh40@gmail.com',),
     );
   }
