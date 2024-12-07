@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_and_geolocator/home_screen.dart';
 
-import 'home_page.dart';
-
-/* This is the 2nd assignment of ostad flutter batch seven
+/* This is the 21th assignment of ostad flutter batch seven
   * Completed by TAMIM HASAN 
-  * Date: 07-08-2024
+  * Date: 07-12-2024
   */
 
 void main() {
@@ -18,12 +17,28 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Greeting App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
+      title: 'Real-Time Location Tracker',
+      theme: appTheme,
+      home: const HomeScreen(),
+    );
+  }
+
+  ThemeData get appTheme {
+    return ThemeData(
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+      useMaterial3: true,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+        centerTitle: true,
       ),
-      home: const HomePage(),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        ),
+      ),
     );
   }
 }

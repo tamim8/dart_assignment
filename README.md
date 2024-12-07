@@ -1,4 +1,4 @@
-# module_10_assignment
+# google_maps_and_geolocator
 
 A new Flutter project.
 
