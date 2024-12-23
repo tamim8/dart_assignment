@@ -10,22 +10,40 @@ class AppTheme {
         useMaterial3: true,
         inputDecorationTheme: inputDecorationTheme,
         elevatedButtonTheme: elevatedButtonTheme,
+        textButtonTheme: textButtonTheme,
+        iconButtonTheme: iconButtonThem,
+        scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-        ));
+        ),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(color: AppColors.primary));
+
   }
 
   static InputDecorationTheme get inputDecorationTheme {
-    return const InputDecorationTheme(
+    return InputDecorationTheme(
+      labelStyle: TextStyle(
+        fontWeight: FontWeight.w300,
+        color: Colors.grey.shade100,
+      ),
+      floatingLabelStyle: const TextStyle(
+        fontWeight: FontWeight.w400,
+        color: AppColors.primary,
+      ),
       fillColor: Colors.white,
       filled: true,
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-        borderSide: BorderSide(color: Colors.white),
+        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        borderSide: BorderSide(width: 1, color: Colors.grey.shade50),
       ),
-      border: OutlineInputBorder(
+      focusedBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(5)),
+        borderSide: BorderSide(width: 1.5, color: AppColors.primary),
+      ),
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        borderSide: BorderSide(width: 1),
       ),
     );
   }
@@ -33,10 +51,19 @@ class AppTheme {
   static ElevatedButtonThemeData get elevatedButtonTheme {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-          minimumSize: const Size(double.infinity, 45),
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
+        fixedSize: const Size(double.infinity, 50),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+      ),
+    );
+  }
+
+  static TextButtonThemeData get textButtonTheme {
+    return TextButtonThemeData(
+      style: TextButton.styleFrom(foregroundColor: AppColors.primary),
     );
   }
 
@@ -53,5 +80,15 @@ class AppTheme {
         borderRadius: BorderRadius.circular(8),
       ),
     );
+  }
+
+  static IconButtonThemeData get iconButtonThem {
+   return IconButtonThemeData(
+
+     style: IconButton.styleFrom(
+       backgroundColor: AppColors.greyLight,
+       foregroundColor: Colors.grey,
+     ),
+   );
   }
 }

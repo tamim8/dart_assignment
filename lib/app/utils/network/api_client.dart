@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:task_manager/app/data/model/api_response.dart';
-import 'package:task_manager/app/utils/secure_storage/secure_storage.dart';
+import 'package:ecommerce_getx/app/data/model/api_response.dart';
+import 'package:ecommerce_getx/app/utils/secure_storage/secure_storage.dart';
 
 import '../constants/api_constants.dart';
 import '../logger/app_logger.dart';

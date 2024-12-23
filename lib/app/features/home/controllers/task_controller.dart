@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/app/features/home/data/repository/task_repository.dart';
+import 'package:ecommerce_getx/app/features/home/data/repository/task_repository.dart';
 
 import '../data/models/task_model.dart';
 import '../data/models/task_status_count_model.dart';
@@ -13,7 +13,8 @@ class TaskController extends GetxController {
   final RxBool isLoading = true.obs;
   late TaskStatus status;
   final RxString errorMessage = ''.obs;
-  final RxList<TaskStatusCountModel> taskStatusCountList = <TaskStatusCountModel>[].obs;
+  final RxList<TaskStatusCountModel> taskStatusCountList =
+      <TaskStatusCountModel>[].obs;
   final RxList<TaskModel> taskList = <TaskModel>[].obs;
 
   final formKey = GlobalKey<FormState>();
@@ -26,7 +27,8 @@ class TaskController extends GetxController {
     try {
       isLoading(true);
       taskStatusCountList.value = await taskRepo.fetchTaskStatusCountList();
-      taskList.value = await taskRepo.fetchTaskList(statusToString(this.status));
+      taskList.value =
+          await taskRepo.fetchTaskList(statusToString(this.status));
       errorMessage('');
     } catch (e) {
       errorMessage(e.toString());
@@ -61,7 +63,8 @@ class TaskController extends GetxController {
     return false;
   }
 
-  Future<void> updateTaskStatus({required String id, required TaskStatus status}) async {
+  Future<void> updateTaskStatus(
+      {required String id, required TaskStatus status}) async {
     try {
       await taskRepo.updateTaskStatus(id, statusToString(status));
       await loadTaskList();

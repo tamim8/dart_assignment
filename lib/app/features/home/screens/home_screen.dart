@@ -1,62 +1,63 @@
+import 'package:ecommerce_getx/app/features/common/widget/category_item_widget.dart';
+import 'package:ecommerce_getx/app/features/common/widget/product_item_widget.dart';
+import 'package:ecommerce_getx/app/features/common/widget/section_header_widget.dart';
+import 'package:ecommerce_getx/app/features/home/screens/widgets/home_screen_slider.dart';
+import 'package:ecommerce_getx/app/features/home/screens/widgets/product_search_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-import '../../../common/widget/app_background.dart';
-import '../../../common/widget/my_app_bar.dart';
-import '../controllers/home_controller.dart';
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
-import 'widgets/widgets.dart';
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
-
-  final List<Widget> _screens = [
-    NewTaskView(),
-    const ProgressTaskView(),
-    const CompletedTaskView(),
-    const CanceledTaskView(),
-  ];
-
-  final HomeController _controller = Get.find<HomeController>();
+class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _searchBarController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const MyAppBar(),
-      body: AppBackground(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Obx(() => _screens[_controller.selectedIndex.value]),
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          ProductSearchBar(controller: _searchBarController),
+          const SizedBox(height: 16),
+          const HomeScreenSlider(),
+          const SizedBox(height: 16),
+          SectionHeader(title: 'Categories', onTap: () {}),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(spacing: 16, children: _categoryList()),
+          ),
+          const SizedBox(height: 16),
+          SectionHeader(title: 'Popular', onTap: () {}),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(spacing: 16, children: _popularProductList()),
+          ),
+          SectionHeader(title: 'Special', onTap: () {}),
+          SectionHeader(title: 'New', onTap: () {}),
+        ],
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
-  Widget _buildBottomNavigationBar() {
-    return Obx(() {
-      return NavigationBar(
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        selectedIndex: _controller.selectedIndex.value,
-        onDestinationSelected: _controller.setIndex,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.task_outlined),
-            label: 'New Task',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.hourglass_empty), // Different icon for clarity
-            label: 'Progress',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.check_circle_outline),
-            // Different icon for clarity
-            label: 'Completed',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.cancel_outlined), // Different icon for clarity
-            label: 'Canceled',
-          ),
-        ],
-      );
-    });
+  List<Widget> _categoryList() {
+    final List<Widget> list = [];
+    for (int i = 0; i < 8; i++) {
+      list.add(const CategoryItemWidget());
+    }
+    return list;
+  }
+  List<Widget> _popularProductList() {
+    final List<Widget> list = [];
+    for (int i = 0; i < 8; i++) {
+      list.add(const ProductItemWidget());
+    }
+    return list;
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../utils/secure_storage/secure_storage.dart';
-import '../../authentication/data/models/user_model.dart';
+import '../../auth/data/models/user_model.dart';
 
 class HomeController extends GetxController {
   final SecureStorage _storage = SecureStorage();
