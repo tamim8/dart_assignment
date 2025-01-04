@@ -15,8 +15,8 @@ class App extends StatelessWidget {
     return GetMaterialApp(
       title: 'E-commerce (GetX)',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.theme,
-      getPages: Routes.routes,
+      theme: AppTheme.light,
+      onGenerateRoute: Routes.generateRoutes,
       initialRoute: RoutesName.initial,
       initialBinding: AuthBinding(),
     );

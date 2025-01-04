@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../features/common/widget/app_alert_dialog.dart';
+import '../../features/common/widgets/app_alert_dialog.dart';
 import '../constants/app_colors.dart';
 
 extension EmailValidator on String {
